@@ -9,7 +9,7 @@ based on http://awhite.blogspot.de/2013/04/javafx-junit-testing.html - Credits t
 <dependency>
 		<groupId>de.saxsys</groupId>
 		<artifactId>jfx-testrunner</artifactId>
-		<version>${jfx-version}</version>
+		<version>1.0</version>
 </dependency>
 ```
 
