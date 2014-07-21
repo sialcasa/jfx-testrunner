@@ -2,6 +2,8 @@ package de.saxsys.javafx.test;
 
 import java.util.concurrent.CountDownLatch;
 
+import javafx.application.Platform;
+
 import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.FrameworkMethod;
@@ -37,11 +39,20 @@ public class JfxRunner extends BlockJUnit4ClassRunner {
 		// method
 		// has been implemented.
 		final CountDownLatch latch = new CountDownLatch(1);
-		// Call super to actually do the work
-		JfxRunner.super.runChild(method, notifier);
+
+		// Check whether the method should run in FX-Thread or not.
+		TestInJfxThread performMethodInFxThread = method.getAnnotation(TestInJfxThread.class);
+		if (performMethodInFxThread != null) {
+			Platform.runLater(() -> {
+				JfxRunner.super.runChild(method, notifier);
+				latch.countDown();
+			});
+		} else {
+			JfxRunner.super.runChild(method, notifier);
+			latch.countDown();
+		}
 
 		// Decrement the latch which will now proceed.
-		latch.countDown();
 
 		try {
 			latch.await();
