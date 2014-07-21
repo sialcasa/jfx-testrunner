@@ -1,6 +1,8 @@
 JavaFX JUnit-4 Testrunner
 ==============
 
+based on http://awhite.blogspot.de/2013/04/javafx-junit-testing.html - Credits to Andy White
+
 ###Maven dependency###
 
 ```
