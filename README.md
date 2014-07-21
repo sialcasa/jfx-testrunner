@@ -22,6 +22,10 @@ public class TestClass {
 	@Test
 	public void testWithoutFXThread() throws Exception {
 		Assert.assertFalse(Platform.isFxApplicationThread());
+
+		Platform.runLater(() -> {
+			Assert.assertTrue(Platform.isFxApplicationThread());
+		});
 	}
 
 	@Test
