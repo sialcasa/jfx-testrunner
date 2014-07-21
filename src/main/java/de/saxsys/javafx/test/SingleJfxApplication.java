@@ -12,7 +12,7 @@ import javafx.stage.Stage;
  * This is the application which starts JavaFx. It is controlled through the
  * startJavaFx() method.
  */
-public class JavaFxJUnit4Application extends Application {
+public class SingleJfxApplication extends Application {
 
 	/** The lock that guarantees that only one JavaFX thread will be started. */
 	private static final ReentrantLock LOCK = new ReentrantLock();
@@ -33,7 +33,7 @@ public class JavaFxJUnit4Application extends Application {
 			if (!started.get()) {
 				// start the JavaFX application
 				final ExecutorService executor = Executors.newSingleThreadExecutor();
-				executor.execute(() -> JavaFxJUnit4Application.launch());
+				executor.execute(() -> SingleJfxApplication.launch());
 
 				while (!started.get()) {
 					Thread.yield();
