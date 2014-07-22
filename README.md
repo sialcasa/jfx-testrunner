@@ -3,6 +3,7 @@ JavaFX JUnit-4 Testrunner
 
 based on http://awhite.blogspot.de/2013/04/javafx-junit-testing.html - Credits to Andy White
 
+[![Build Status](https://travis-ci.org/sialcasa/jfx-testrunner.svg?branch=master)](https://travis-ci.org/sialcasa/jfx-testrunner)
 ###Maven dependency###
 
 ```
