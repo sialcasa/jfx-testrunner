@@ -13,7 +13,7 @@ based on http://awhite.blogspot.de/2013/04/javafx-junit-testing.html - Credits t
 </dependency>
 ```
 
-#How To - Choose whether the test should be performed in the JavaFX Thread or not#
+####How To - Choose whether the test should be performed in the JavaFX Thread or not####
 
 ```
 @RunWith(JfxRunner.class)
