@@ -8,7 +8,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.logging.Logger;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -47,14 +46,10 @@ public class SingleJfxApplication extends Application {
 
                 while (!started.get()) {
                     try {
-                        // there is an Issue, if the Application needs more than
-                        // a second to start
-                        jfxLaunchFuture.get(1, TimeUnit.SECONDS);
+                        jfxLaunchFuture.get(1, TimeUnit.MILLISECONDS);
                     } catch (InterruptedException | TimeoutException e) {
-                        System.err.println("Could not launce JavaFX Application.");
-                        Logger.getGlobal().severe("Could not launce JavaFX Application.");
+                        // continue waiting until success or error
                     }
-
                     Thread.yield();
                 }
             }
