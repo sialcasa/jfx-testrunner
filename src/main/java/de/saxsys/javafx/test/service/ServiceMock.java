@@ -12,6 +12,14 @@ import javafx.concurrent.Service;
 import javafx.concurrent.Worker;
 import javafx.concurrent.Worker.State;
 
+/**
+ * Mirror of {@link Worker} / {@link Service} to be used for testing to avoid thread-access-issues.
+ * 
+ * @author sialcasa
+ *
+ * @param <V>
+ *            type of the Service which should be testet
+ */
 public class ServiceMock<V> {
 	
 	private final ObjectProperty<State> state = new SimpleObjectProperty<>(this, "state", State.READY);
