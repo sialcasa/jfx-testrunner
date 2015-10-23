@@ -5,12 +5,12 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import de.saxsys.javafx.test.JfxRunner;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Service;
 import javafx.concurrent.Worker.State;
+import de.saxsys.javafx.test.JfxRunner;
 
 /**
  * This is a helper class for testing services. This class enables you to test your service with a J-Unit test. You need
@@ -76,7 +76,6 @@ public class ServiceTestHelper<V> {
 		CompletableFuture<ServiceMock<V>> future = new CompletableFuture<>();
 		
 		ChangeListener changeListener = (b, o, newValue) -> {
-			System.out.println(newValue);
 			if (newValue == targetValue) {
 				future.complete(new ServiceMock<V>(service));
 			}
