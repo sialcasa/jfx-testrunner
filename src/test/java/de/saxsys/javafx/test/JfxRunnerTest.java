@@ -13,8 +13,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import de.saxsys.javafx.test.service.ServiceMock;
-import de.saxsys.javafx.test.service.ServiceTargetValue;
 import de.saxsys.javafx.test.service.ServiceWrapper;
 
 //Tests dont run in travis CI because its headless
@@ -47,16 +45,16 @@ public class JfxRunnerTest {
 	public void testMultipleServiceCallsUsingTargetValue() throws ExecutionException, InterruptedException,
 			TimeoutException {
 		ServiceToTest service = new ServiceToTest();
-		ServiceTargetValue<String> serviceTestHelper = new ServiceTargetValue<String>(service, 5);
+		ServiceWrapper wrapper = new ServiceWrapper(service);
 		
-		ServiceMock<String> mockForTestOne = serviceTestHelper.startAndWaitForValue(
+		wrapper.startAndWaitForValue(
 				service::stateProperty, State.SUCCEEDED, 5000);
-		assertEquals("I'm an expensive result 1", mockForTestOne.getValue());
+		assertEquals("I'm an expensive result 1", wrapper.getValue());
 		
-		ServiceMock<String> mockForTestTwo = serviceTestHelper.restartAndWaitForValue(service::stateProperty,
+		wrapper.restartAndWaitForValue(service::stateProperty,
 				State.SUCCEEDED, 5000);
-		assertEquals("I'm an expensive result 2", mockForTestTwo.getValue());
-		assertEquals(State.SUCCEEDED, mockForTestTwo.getState());
+		assertEquals("I'm an expensive result 2", wrapper.getValue());
+		assertEquals(State.SUCCEEDED, wrapper.getState());
 	}
 	
 	@Test
