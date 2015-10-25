@@ -7,8 +7,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 import javafx.application.Platform;
-import javafx.concurrent.Service;
-import javafx.concurrent.Task;
 import javafx.concurrent.Worker.State;
 
 import org.junit.Assert;
@@ -46,52 +44,40 @@ public class JfxRunnerTest {
 	}
 	
 	@Test
-	public void testMultipleServiceCallsWithServiceMock() throws ExecutionException, InterruptedException,
+	public void testMultipleServiceCallsUsingTargetValue() throws ExecutionException, InterruptedException,
 			TimeoutException {
-		
-		Service<String> service = new Service<String>() {
-			int counter = 0;
-			
-			@Override
-			protected Task<String> createTask() {
-				return new Task<String>() {
-					@Override
-					protected String call() throws Exception {
-						try {
-							Thread.sleep(1000);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-						counter++;
-						return "I'm an expensive result " + counter;
-					}
-				};
-			}
-		};
-		
+		ServiceToTest service = new ServiceToTest();
 		ServiceTargetValue<String> serviceTestHelper = new ServiceTargetValue<String>(service, 5);
 		
-		ServiceMock<String> mockForTestOne = serviceTestHelper.runServiceUntiTargetValueReached(
-				service::stateProperty, State.SUCCEEDED);
+		ServiceMock<String> mockForTestOne = serviceTestHelper.startAndWaitForValue(
+				service::stateProperty, State.SUCCEEDED, 5000);
 		assertEquals("I'm an expensive result 1", mockForTestOne.getValue());
 		
-		ServiceMock<String> mockForTestTwo = serviceTestHelper.runServiceUntiTargetValueReached(service::stateProperty,
-				State.SUCCEEDED);
+		ServiceMock<String> mockForTestTwo = serviceTestHelper.restartAndWaitForValue(service::stateProperty,
+				State.SUCCEEDED, 5000);
 		assertEquals("I'm an expensive result 2", mockForTestTwo.getValue());
 		assertEquals(State.SUCCEEDED, mockForTestTwo.getState());
 	}
 	
 	@Test
-	public void testUsingWrapper() throws Exception {
+	public void testMultipleServiceCallsWithWrapper() throws Exception {
 		
 		ServiceWrapper proxy = new ServiceWrapper(new ServiceToTest());
 		proxy.startAndWait(5000);
+		
 		assertEquals("I'm an expensive result 1", proxy.getValue());
 		assertEquals(1.0, proxy.getProgress(), 1);
 		assertEquals("Test", proxy.getMessage());
 		
-		proxy.restartAndWait(5000);
+		proxy.reset();
+		assertEquals(null, proxy.getValue());
+		assertEquals(-1, proxy.getProgress(), 1);
+		
+		proxy.startAndWait(5000);
 		assertEquals("I'm an expensive result 2", proxy.getValue());
+		
+		proxy.restartAndWait(5000);
+		assertEquals("I'm an expensive result 3", proxy.getValue());
 		
 	}
 	
