@@ -10,7 +10,7 @@ based on http://awhite.blogspot.de/2013/04/javafx-junit-testing.html - Credits t
 <dependency>
 		<groupId>de.saxsys</groupId>
 		<artifactId>jfx-testrunner</artifactId>
-		<version>1.0</version>
+		<version>1.2-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -38,6 +38,43 @@ public class TestClass {
     public void testWithFXThread() throws Exception {
         Assert.assertTrue(Platform.isFxApplicationThread());
     }
+    
+    @Test
+	public void testMultipleServiceCallsWithWrapper() throws Exception {
+		
+		ServiceWrapper wrapper = new ServiceWrapper(new ServiceToTest());
+		wrapper.startAndWait(5000);
+		
+		assertEquals("I'm an expensive result 1", wrapper.getValue());
+		assertEquals(1.0, wrapper.getProgress(), 1);
+		assertEquals("Test", wrapper.getMessage());
+		
+		wrapper.reset();
+		assertEquals(null, wrapper.getValue());
+		assertEquals(-1, wrapper.getProgress(), 1);
+		
+		wrapper.startAndWait(5000);
+		assertEquals("I'm an expensive result 2", wrapper.getValue());
+		
+		wrapper.restartAndWait(5000);
+		assertEquals("I'm an expensive result 3", wrapper.getValue());
+	}
+	
+	@Test
+	public void testMultipleServiceCallsUsingTargetValue() throws ExecutionException, InterruptedException,
+			TimeoutException {
+		ServiceWrapper wrapper = new ServiceWrapper(new ServiceToTest());
+		
+		wrapper.startAndWaitForValue(
+				service::stateProperty, State.SUCCEEDED, 5000);
+		assertEquals("I'm an expensive result 1", wrapper.getValue());
+		
+		wrapper.restartAndWaitForValue(service::stateProperty,
+				State.SUCCEEDED, 5000);
+		assertEquals("I'm an expensive result 2", wrapper.getValue());
+		assertEquals(State.SUCCEEDED, wrapper.getState());
+	}
 }
 ```
+
 
