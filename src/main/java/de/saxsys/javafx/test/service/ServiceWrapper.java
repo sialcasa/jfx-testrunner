@@ -15,6 +15,7 @@ import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Service;
 import javafx.concurrent.Worker;
 import javafx.event.EventHandler;
@@ -92,6 +93,77 @@ public class ServiceWrapper implements Worker {
 		});
 		removeListener.get(1000, TimeUnit.MILLISECONDS);
 	}
+	
+	
+	/**
+	 * Starts the {@link Service} and blocks the caller thread until it reached the @targetValue of the
+	 * {@link ObservableValue} which is taken by the @observableGetter. This could be for example the
+	 * {@link Service#valueProperty()}.
+	 * 
+	 * @param observableGetter
+	 *            which is the value to be testet (e.g. {@link Service#valueProperty()})
+	 * @param targetValue
+	 *            which is the value to be reached (e.g. State {@link State.SUCCEEDED})
+	 * @param timeoutInSeconds
+	 *            that fails the execution if the @targetValue could not reached on @observableGetter in time
+	 * @return
+	 */
+	public void startAndWaitForValue(ObservableGetter observableGetter,
+			Object targetValue,
+			long timeoutInSeconds) throws InterruptedException, ExecutionException, TimeoutException
+	{
+		callService(observableGetter, targetValue, timeoutInSeconds, () -> service.start());
+	}
+	
+	/**
+	 * Restarts the {@link Service} and blocks the caller thread until it reached the @targetValue of the
+	 * {@link ObservableValue} which is taken by the @observableGetter. This could be for example the
+	 * {@link Service#valueProperty()}.
+	 * 
+	 * @param observableGetter
+	 *            which is the value to be testet (e.g. {@link Service#valueProperty()})
+	 * @param targetValue
+	 *            which is the value to be reached (e.g. State {@link State.SUCCEEDED})
+	 * @param timeoutInSeconds
+	 *            that fails the execution if the @targetValue could not reached on @observableGetter in time
+	 */
+	public void restartAndWaitForValue(ObservableGetter observableGetter,
+			Object targetValue,
+			long timeoutInSeconds) throws InterruptedException, ExecutionException, TimeoutException
+	{
+		callService(observableGetter, targetValue, timeoutInSeconds,
+				() -> service.restart());
+	}
+	
+	private void callService(ObservableGetter observableGetter, Object targetValue, long timeoutInSeconds,
+			Runnable serviceCall)
+			throws InterruptedException, ExecutionException, TimeoutException {
+		CompletableFuture<Void> future = new CompletableFuture<>();
+		
+		ChangeListener changeListener = (b, o, newValue) -> {
+			if (newValue == targetValue) {
+				future.complete(null);
+			}
+		};
+		
+		Platform.runLater(() -> {
+			observableGetter.getValue().addListener(changeListener);
+			serviceCall.run();
+		});
+		
+		future.get(timeoutInSeconds, TimeUnit.SECONDS);
+		
+		CompletableFuture<Void> removedListenerFuture = new CompletableFuture<Void>();
+		
+		Platform.runLater(() -> {
+			observableGetter.getValue().removeListener(changeListener);
+			removedListenerFuture.complete(null);
+		});
+		
+		removedListenerFuture.get(1, TimeUnit.SECONDS);
+	}
+	
+	
 	
 	// Async logic for delegates
 	
