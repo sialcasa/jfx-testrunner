@@ -28,30 +28,30 @@ import de.saxsys.javafx.test.JfxRunner;
  *
  * @param <V>
  */
-public class ServiceTestHelper<V> {
+public class ServiceTargetValue<V> {
 	
 	private final Service<V> service;
 	private final long timeoutInSeconds;
 	
 	/**
-	 * Initializes the {@link ServiceTestHelper} with the Service to be tested with a default timeout of 1 second, which
+	 * Initializes the {@link ServiceTargetValue} with the Service to be tested with a default timeout of 1 second, which
 	 * will be used for the following executions of {@link #runServiceUntiTargetValueReached(ObservableGetter, Object)}.
 	 * 
 	 * @param service
 	 */
-	public ServiceTestHelper(Service<V> service) {
+	public ServiceTargetValue(Service<V> service) {
 		this.service = service;
 		this.timeoutInSeconds = 1;
 	}
 	
 	/**
-	 * Initializes the {@link ServiceTestHelper} with the Service to be tested and a default timeout which will be used
+	 * Initializes the {@link ServiceTargetValue} with the Service to be tested and a default timeout which will be used
 	 * for the following executions of {@link #runServiceUntiTargetValueReached(ObservableGetter, Object)}.
 	 * 
 	 * @param service
 	 * @param timeoutInSeconds
 	 */
-	public ServiceTestHelper(Service<V> service, long timeoutInSeconds) {
+	public ServiceTargetValue(Service<V> service, long timeoutInSeconds) {
 		this.service = service;
 		this.timeoutInSeconds = timeoutInSeconds;
 	}

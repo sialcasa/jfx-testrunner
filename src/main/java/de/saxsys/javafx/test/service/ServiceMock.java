@@ -32,7 +32,7 @@ public class ServiceMock<V> {
 	private final StringProperty message = new SimpleStringProperty(this, "message", "");
 	private final StringProperty title = new SimpleStringProperty(this, "title", "");
 	
-	public ServiceMock(Service<V> service) {
+	ServiceMock(Service<V> service) {
 		this.setException(service.getException());
 		this.setMessage(service.getMessage());
 		this.setProgress(service.getProgress());

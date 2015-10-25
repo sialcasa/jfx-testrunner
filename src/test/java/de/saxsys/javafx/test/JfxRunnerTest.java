@@ -16,7 +16,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import de.saxsys.javafx.test.service.ServiceMock;
-import de.saxsys.javafx.test.service.ServiceTestHelper;
+import de.saxsys.javafx.test.service.ServiceTargetValue;
+import de.saxsys.javafx.test.service.ServiceWrapper;
 
 //Tests dont run in travis CI because its headless
 @RunWith(JfxRunner.class)
@@ -68,16 +69,30 @@ public class JfxRunnerTest {
 			}
 		};
 		
-		ServiceTestHelper<String> serviceTestHelper = new ServiceTestHelper<String>(service, 5);
+		ServiceTargetValue<String> serviceTestHelper = new ServiceTargetValue<String>(service, 5);
 		
-		ServiceMock<String> sermockForTestOne = serviceTestHelper.runServiceUntiTargetValueReached(
+		ServiceMock<String> mockForTestOne = serviceTestHelper.runServiceUntiTargetValueReached(
 				service::stateProperty, State.SUCCEEDED);
-		assertEquals("I'm an expensive result 1", sermockForTestOne.getValue());
+		assertEquals("I'm an expensive result 1", mockForTestOne.getValue());
 		
 		ServiceMock<String> mockForTestTwo = serviceTestHelper.runServiceUntiTargetValueReached(service::stateProperty,
 				State.SUCCEEDED);
 		assertEquals("I'm an expensive result 2", mockForTestTwo.getValue());
 		assertEquals(State.SUCCEEDED, mockForTestTwo.getState());
+	}
+	
+	@Test
+	public void testUsingWrapper() throws Exception {
+		
+		ServiceWrapper proxy = new ServiceWrapper(new ServiceToTest());
+		proxy.startAndWait(5000);
+		assertEquals("I'm an expensive result 1", proxy.getValue());
+		assertEquals(1.0, proxy.getProgress(), 1);
+		assertEquals("Test", proxy.getMessage());
+		
+		proxy.restartAndWait(5000);
+		assertEquals("I'm an expensive result 2", proxy.getValue());
+		
 	}
 	
 }
