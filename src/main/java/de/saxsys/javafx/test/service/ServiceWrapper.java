@@ -16,22 +16,54 @@ import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.concurrent.Service;
-import javafx.concurrent.Worker.State;
+import javafx.concurrent.Worker;
 import javafx.event.EventHandler;
 
-
-public class ServiceWrapper {
+/**
+ * Class which wrapps a Service and delegates the calls to this service in the UI-Thread. It helps you to access the
+ * values of the Services from outside of the UI-Thread.
+ * 
+ * @author sialcasa
+ */
+public class ServiceWrapper implements Worker {
 	
 	private final Service service;
 	
+	/**
+	 * Create the Wrapper with a given service.
+	 * 
+	 * @param service
+	 */
 	public ServiceWrapper(Service service) {
 		this.service = service;
 	}
 	
+	/**
+	 * Calls the {@link Service#start()} method of the given service and blocks the caller thread until the state
+	 * RUNNING, FAILED, or CANCELLED (was RUNNING befor) is reached.
+	 * 
+	 * @param timeout
+	 *            maximum duration of the call
+	 * 
+	 * @throws InterruptedException
+	 * @throws ExecutionException
+	 * @throws TimeoutException
+	 */
 	public void startAndWait(long timeout) throws InterruptedException, ExecutionException, TimeoutException {
 		callAndWaitService(timeout, () -> service.start());
 	}
 	
+	/**
+	 * Calls the {@link Service#restart()} method of the given service and blocks the caller thread until the state
+	 * RUNNING, FAILED, or CANCELLED (was RUNNING befor) is reached.
+	 * 
+	 * @param timeout
+	 *            maximum duration of the call
+	 * 
+	 * @throws InterruptedException
+	 * @throws ExecutionException
+	 * @throws TimeoutException
+	 */
 	public void restartAndWait(long timeout) throws InterruptedException, ExecutionException, TimeoutException {
 		callAndWaitService(timeout, () -> service.restart());
 	}
@@ -61,9 +93,7 @@ public class ServiceWrapper {
 		removeListener.get(1000, TimeUnit.MILLISECONDS);
 	}
 	
-	
-	
-	// DELEGATES
+	// Async logic for delegates
 	
 	private <T extends Object> T callMethodInUIThread(Supplier<T> call) {
 		CompletableFuture<T> called = new CompletableFuture<>();
@@ -82,74 +112,94 @@ public class ServiceWrapper {
 		}
 	}
 	
+	// DELEGATES
+	
+	@Override
 	public final State getState() {
 		return callMethodInUIThread(() -> service.getState());
 	}
 	
+	@Override
 	public final ReadOnlyObjectProperty stateProperty() {
 		return service.stateProperty();
 	}
 	
+	@Override
 	public final Object getValue() {
 		return callMethodInUIThread(() -> service.getValue());
 	}
 	
+	@Override
 	public final ReadOnlyObjectProperty valueProperty() {
 		return callMethodInUIThread(() -> service.valueProperty());
 	}
 	
+	@Override
 	public final Throwable getException() {
 		return callMethodInUIThread(() -> service.getException());
 	}
 	
+	@Override
 	public final ReadOnlyObjectProperty exceptionProperty() {
 		return callMethodInUIThread(() -> service.exceptionProperty());
 	}
 	
+	@Override
 	public final double getWorkDone() {
 		return callMethodInUIThread(() -> service.getWorkDone());
 	}
 	
+	@Override
 	public final ReadOnlyDoubleProperty workDoneProperty() {
 		return callMethodInUIThread(() -> service.workDoneProperty());
 	}
 	
+	@Override
 	public final double getTotalWork() {
 		return callMethodInUIThread(() -> service.getTotalWork());
 	}
 	
+	@Override
 	public final ReadOnlyDoubleProperty totalWorkProperty() {
 		return callMethodInUIThread(() -> service.totalWorkProperty());
 	}
 	
+	@Override
 	public final double getProgress() {
 		return callMethodInUIThread(() -> service.getProgress());
 	}
 	
+	@Override
 	public final ReadOnlyDoubleProperty progressProperty() {
 		return callMethodInUIThread(() -> service.progressProperty());
 	}
 	
+	@Override
 	public final boolean isRunning() {
 		return callMethodInUIThread(() -> service.isRunning());
 	}
 	
+	@Override
 	public final ReadOnlyBooleanProperty runningProperty() {
 		return callMethodInUIThread(() -> service.runningProperty());
 	}
 	
+	@Override
 	public final String getMessage() {
 		return callMethodInUIThread(() -> service.getMessage());
 	}
 	
+	@Override
 	public final ReadOnlyStringProperty messageProperty() {
 		return callMethodInUIThread(() -> service.messageProperty());
 	}
 	
+	@Override
 	public final String getTitle() {
 		return callMethodInUIThread(() -> service.getTitle());
 	}
 	
+	@Override
 	public final ReadOnlyStringProperty titleProperty() {
 		return callMethodInUIThread(() -> service.titleProperty());
 	}
@@ -214,6 +264,7 @@ public class ServiceWrapper {
 		return callMethodInUIThread(() -> service.getOnFailed());
 	}
 	
+	@Override
 	public boolean cancel() {
 		return callMethodInUIThread(() -> service.cancel());
 	}
@@ -224,5 +275,6 @@ public class ServiceWrapper {
 			return null;
 		});
 	}
+	
 	
 }
