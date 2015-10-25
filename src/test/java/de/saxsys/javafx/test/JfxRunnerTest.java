@@ -35,12 +35,6 @@ public class JfxRunnerTest {
 		Assert.assertTrue(Platform.isFxApplicationThread());
 	}
 	
-	// @Test(timeout = 6000)
-	// @TestInJfxThread
-	// public void testWithFXThreadWithTimeout() throws Exception {
-	// Assert.assertTrue(Platform.isFxApplicationThread());
-	// }
-	
 	@Test
 	public void testMultipleServiceCallsUsingTargetValue() throws ExecutionException, InterruptedException,
 			TimeoutException {
