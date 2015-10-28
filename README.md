@@ -10,11 +10,11 @@ based on http://awhite.blogspot.de/2013/04/javafx-junit-testing.html - Credits t
 <dependency>
 		<groupId>de.saxsys</groupId>
 		<artifactId>jfx-testrunner</artifactId>
-		<version>1.2-SNAPSHOT</version>
+		<version>1.2</version>
 </dependency>
 ```
 
-####How To - Choose whether the test should be performed in the JavaFX Thread or not####
+####JFX-Runner Bootstrappes the JavaFX-Toolkit and enables you to run whole Tests in the UI-Thread####
 
 ```
 @RunWith(JfxRunner.class)
@@ -60,7 +60,42 @@ public class TestClass {
 		assertEquals("I'm an expensive result 3", wrapper.getValue());
 	}
 	
-	@Test
+
+}
+```
+
+####Easy testing of JavaFX Services####
+```
+@RunWith(JfxRunner.class)
+public class TestClass {
+    @Test
+	public void testMultipleServiceCallsWithWrapper() throws Exception {
+		
+		ServiceWrapper wrapper = new ServiceWrapper(new ServiceToTest());
+		wrapper.startAndWait(5000);
+		
+		assertEquals("I'm an expensive result 1", wrapper.getValue());
+		assertEquals(1.0, wrapper.getProgress(), 1);
+		assertEquals("Test", wrapper.getMessage());
+		
+		wrapper.reset();
+		assertEquals(null, wrapper.getValue());
+		assertEquals(-1, wrapper.getProgress(), 1);
+		
+		wrapper.startAndWait(5000);
+		assertEquals("I'm an expensive result 2", wrapper.getValue());
+		
+		wrapper.restartAndWait(5000);
+		assertEquals("I'm an expensive result 3", wrapper.getValue());
+	}
+}
+```
+
+####Advanced Testing of JavaFX Services####
+```
+@RunWith(JfxRunner.class)
+public class TestClass {
+    	@Test
 	public void testMultipleServiceCallsUsingTargetValue() throws ExecutionException, InterruptedException,
 			TimeoutException {
 		ServiceWrapper wrapper = new ServiceWrapper(new ServiceToTest());
@@ -76,5 +111,4 @@ public class TestClass {
 	}
 }
 ```
-
 
