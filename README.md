@@ -1,5 +1,13 @@
 JavaFX JUnit-4 Testrunner
 ==============
+##Testrunner is going to be merged to [mvvmfx](https://github.com/sialcasa/mvvmFX)##
+###1.2 is the last version of testrunner - already use the dependency of [mvvmfx](https://github.com/sialcasa/mvvmFX/tree/develop/mvvmfx-testing-utils)  ###
+---
+---
+---
+---
+---
+---
 
 based on http://awhite.blogspot.de/2013/04/javafx-junit-testing.html - Credits to Andy White
 
