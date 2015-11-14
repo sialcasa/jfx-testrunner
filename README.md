@@ -10,7 +10,7 @@ based on http://awhite.blogspot.de/2013/04/javafx-junit-testing.html - Credits t
 [![Build Status](https://travis-ci.org/sialcasa/jfx-testrunner.svg?branch=master)](https://travis-ci.org/sialcasa/jfx-testrunner)
 ###Maven dependency###
 
-```
+```XML
 <dependency>
 		<groupId>de.saxsys</groupId>
 		<artifactId>jfx-testrunner</artifactId>
@@ -19,7 +19,7 @@ based on http://awhite.blogspot.de/2013/04/javafx-junit-testing.html - Credits t
 ```
 
 ####Use the testrunner to bootstrap JavaFX for your tests####
-```
+```Java
 @RunWith(JfxRunner.class)
 public class TestClass {
 ...
@@ -27,7 +27,7 @@ public class TestClass {
 ```
 
 ####Use @TestInJfxThread annotation to run specific tests in the JavaFX-thread####
-```
+```Java
 @RunWith(JfxRunner.class)
 public class TestClass {
 
@@ -49,7 +49,7 @@ public class TestClass {
 - Allows you to wait for a Service execution
 - Allows you to access the Service properties, without getting Runtime Exceptions because you accessed them from outside of the JavaFX-thread
 
-```
+```Java
 @RunWith(JfxRunner.class)
 public class TestClass {
     @Test
@@ -80,7 +80,7 @@ public class TestClass {
 
 - Allows you to wait for specific property values of the Service
 
-```
+```Java
 @RunWith(JfxRunner.class)
 public class TestClass {
     	@Test
